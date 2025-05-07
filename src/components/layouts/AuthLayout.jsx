@@ -6,7 +6,6 @@ import { Link, Outlet } from 'react-router'
 export default function AuthLayout() {
     const ProfileContext = createContext()
     const [data, setData] = useState({})
-    console.log(data)
     const [menu, setMenu] = useState(false)
     const rolesOptions = [
         { name: "Perfil", roles: ['Admin', 'Student'], link: "/" },
