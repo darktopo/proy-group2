@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router";
 import Login from "./pages/Login";
 import AuthLayout from "./components/layouts/AuthLayout";
 import HorasServicioAdmin from "./pages/HorasServicioAdmin";
+import ForbiddenPage from "./pages/Forbidden";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         </Route>
 
         <Route path="/login" element={<Login />} />
+        <Route path="/forbiden" element={<ForbiddenPage />} />
       </Routes>
     </>
   );

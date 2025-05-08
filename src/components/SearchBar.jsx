@@ -1,13 +1,18 @@
-// SearchBar.jsx
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SearchBar = ({ suggestions, onSearch }) => {
   const [input, setInput] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const wrapperRef = useRef(null);
 
   const handleChange = (e) => {
     const value = e.target.value;
     setInput(value);
+
+    if (!value.trim()) {
+      setFilteredSuggestions([]);
+      return;
+    }
 
     const matches = suggestions.filter((name) =>
       name.toLowerCase().includes(value.toLowerCase())
@@ -24,10 +29,33 @@ const SearchBar = ({ suggestions, onSearch }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSearch(input);
+    setFilteredSuggestions([]);
   };
 
+  // Ocultar sugerencias al hacer clic fuera del componente
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setFilteredSuggestions([]);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setFilteredSuggestions([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   return (
-    <form onSubmit={handleSubmit} className="w-full">
+    <form onSubmit={handleSubmit} className="w-full" ref={wrapperRef}>
       <input
         type="text"
         placeholder="Nombre del estudiante"
