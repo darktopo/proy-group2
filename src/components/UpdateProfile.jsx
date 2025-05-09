@@ -35,6 +35,7 @@ export default function UpdateProfile() {
                     {...register("full_name")}
                     readOnly
 
+
                 />
             </div>
 
@@ -125,4 +126,6 @@ export default function UpdateProfile() {
             </div>
         </>
     )
+
 }
+
