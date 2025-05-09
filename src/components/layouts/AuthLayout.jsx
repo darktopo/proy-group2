@@ -3,8 +3,10 @@ import Navbar from '../Navbar'
 import { profile } from '../../axios/auth/auth'
 import { Link, Outlet } from 'react-router'
 
+export const ProfileContext = createContext()
+
 export default function AuthLayout() {
-    const ProfileContext = createContext()
+
     const [data, setData] = useState({})
     console.log(data)
     const [menu, setMenu] = useState(false)
@@ -24,7 +26,7 @@ export default function AuthLayout() {
     }
 
     return (
-        <ProfileContext value={{ data }}>
+        <ProfileContext.Provider value={{ data }}>
             <div>
                 <Navbar
                     setMenu={setMenu}
@@ -45,6 +47,6 @@ export default function AuthLayout() {
                 }
                 <Outlet />
             </div>
-        </ProfileContext>
+        </ProfileContext.Provider>
     )
 }

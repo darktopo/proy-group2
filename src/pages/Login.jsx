@@ -4,22 +4,25 @@ import { useNavigate } from 'react-router';
 
 export default function Login() {
     const navigate = useNavigate();
-    const [error, setError] = useState (false)
-    
+
+    const [error, setError] = useState(false)
+
     async function handleLogin(e) {
         e.preventDefault()
-        try{
-        const formdata = new FormData(e.target);
-        const requestData = Object.fromEntries(formdata.entries())
+        try {
+            const formdata = new FormData(e.target);
+            const requestData = Object.fromEntries(formdata.entries())
 
-        const data = await login(requestData)
-        console.log(data)
-        
+            const data = await login(requestData)
+            console.log(data)
+
             if (data.status === 'success') {
                 navigate('/');
-            }else{
-            setError(true)
-        }}catch(error){
+            } else {
+                setError(true)
+            }
+        } catch (error) {
+
             console.log(error)
             setError(true)
         }

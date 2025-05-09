@@ -31,11 +31,13 @@ export default function UpdateProfile() {
             <div className="mb-8 p-6  rounded-lg bg-[rgb(226,228,231)] shadow-lg shadow-gray-400 flex flex-col md:flex-row items-center gap-8">
                 <img className="size-40 rounded-2xl" src="foto_perfil.avif" alt="" />
                 <input type="text"
-                className="border-0 outline-none w-full md:w-[80%] text-center md:text-start md:text-2xl
+
+                    className="border-0 outline-none w-full md:w-[80%] text-center md:text-start md:text-2xl
                 font-semibold tracking-tight"
-                {...register("full_name")}
-                readOnly
-                
+                    {...register("full_name")}
+                    readOnly
+
+
                 />
             </div>
 
@@ -126,4 +128,6 @@ export default function UpdateProfile() {
             </div>
         </>
     )
+
 }
+

@@ -5,36 +5,38 @@ import { useEffect, useState } from "react"
 
 export default function UpdatePassword() {
     const { register, reset, formState: { isValid }, handleSubmit, watch } = useForm()
-    const [change,setChange] = useState(false)
-    const [error, setError] = useState (false)
-  const submitForm = async (data, e) => {
-    e.preventDefault()
-    try {
-      const status = await changePassword(data)
-      if (status === 200) {
-        setChange(true)
-        reset()
-      }
-    } catch (error) {
-      console.log(error)
-      setError(true)
-      return
-    }
-  }
-  useEffect(() => {
-          if (change === true) {
-              setTimeout(() => {
-                  setChange(false);
-              }, 3000);
-          }
-      }, [change]);
-      
-  const oldPassword = watch('old_password');
-  const newPassword = watch('new_password')
-  const confirmNewPassword = watch('confirm_new_password');
 
-  const validateNewPassword = () => newPassword && newPassword === oldPassword
-  const validateConfirmPassword = () => confirmNewPassword && confirmNewPassword !== newPassword;
+    const [change, setChange] = useState(false)
+    const [error, setError] = useState(false)
+    const submitForm = async (data, e) => {
+        e.preventDefault()
+        try {
+            const status = await changePassword(data)
+            if (status === 200) {
+                setChange(true)
+                reset()
+            }
+        } catch (error) {
+            console.log(error)
+            setError(true)
+            return
+        }
+    }
+    useEffect(() => {
+        if (change === true) {
+            setTimeout(() => {
+                setChange(false);
+            }, 3000);
+        }
+    }, [change]);
+
+    const oldPassword = watch('old_password');
+    const newPassword = watch('new_password')
+    const confirmNewPassword = watch('confirm_new_password');
+
+    const validateNewPassword = () => newPassword && newPassword === oldPassword
+    const validateConfirmPassword = () => confirmNewPassword && confirmNewPassword !== newPassword;
+
 
     return (
         <div className="p-6 rounded-lg bg-[rgb(226,228,231)] shadow-lg shadow-gray-400">
@@ -48,7 +50,9 @@ export default function UpdatePassword() {
                             {...register("old_password", {
                                 required: "Tu contraseña anterior es requerida",
                                 validate: (value) => value === oldPassword
-                              })}
+
+                            })}
+
                             placeholder="Antigua contraseña"
                             className="w-full bg-white p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#297ee2] cursor-pointer"
                         />
@@ -60,7 +64,9 @@ export default function UpdatePassword() {
                             {...register("new_password", {
                                 required: "Tu nueva contraseña es requerida",
                                 validate: (value) => value !== oldPassword
-                              })}
+
+                            })}
+
                             placeholder="Nueva contrazeña"
                             className="w-full bg-white p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#297ee2] cursor-pointer"
                         />
@@ -72,7 +78,9 @@ export default function UpdatePassword() {
                             {...register("confirm_new_password", {
                                 required: "Debes confirmar tu  nueva contraseña",
                                 validate: (value) => value === newPassword
-                              })}
+
+                            })}
+
                             placeholder="Confirmar nueva contraseña"
                             className="w-full bg-white p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#297ee2] cursor-pointer"
                         />
@@ -99,4 +107,6 @@ export default function UpdatePassword() {
             </form>
         </div>
     )
+
 }
+
