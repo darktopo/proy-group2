@@ -26,3 +26,12 @@ export async function profile() {
         throw error
     }
 }
+
+export async function changePassword(data) {
+    try {
+        const { status } = await instance.put('/auth/change-password', data)
+        return status
+    } catch (error) {
+        throw error
+    }
+}
