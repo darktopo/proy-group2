@@ -54,7 +54,7 @@ const HorasServicioAdmin = () => {
         try {
             const response = await instance.get(`/evidence/${id}`, {
                 headers: {
-                    "Content-Type": "application/pdf",
+                    "Content-Type": "multipart/form-data",
                     "Accept": "application/pdf",
                 },
                 responseType: "blob",

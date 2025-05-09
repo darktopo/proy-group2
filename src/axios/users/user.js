@@ -8,3 +8,4 @@ export async function update(request, id) {
         throw error
     }
 }
+

@@ -35,3 +35,4 @@ export async function changePassword(data) {
         throw error
     }
 }
+

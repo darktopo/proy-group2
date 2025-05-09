@@ -33,7 +33,7 @@ export default function Login() {
             <div className='bg-white w-[90%] max-w-120 h-80 shadow-gray-800 shadow-lg rounded-xl flex flex-col items-center py-5'>
                 <img className='w-80 rounded-t-2xl mb-3' src="logo-funval.png" alt="logo_funval" />
 
-                <form className='w-[85%]' onSubmit={handleLogin}>
+                <form className='w-[85%]' onSubmit={handleLogin} encType='multipart/form-data'>
                     <label htmlFor="email" className="">
                         <input type="email" name="email" id="email" className="w-full h-11 border border-gray-700 rounded-lg pl-3 font-semibold outline-none text-gray-600 mb-4 hover:bg-gray-200 focus:border-2 cursor-pointer" placeholder="Your@email.com" required="" />
                     </label>
