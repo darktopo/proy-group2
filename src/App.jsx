@@ -1,9 +1,32 @@
-import React from 'react'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Agregamos Navigate
+import Login from './components/Login';
+import StudentsTable from './components/StudentsTable';
+import ProtectedRoute from './components/ProtectedRoute';
 
-export default function App() {
+const App = () => {
   return (
-    <div>
+    <Router>
+      <Routes>
+        {/* Redirige la ruta raíz / hacia /login */}
+        <Route path="/" element={<Navigate to="/login" />} />
 
-    </div>
-  )
-}
+        <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/students"
+          element={
+            <ProtectedRoute>
+              <StudentsTable />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
+
+
+
