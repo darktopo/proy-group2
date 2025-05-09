@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router'
 import Login from './pages/Login'
 import AuthLayout from './components/layouts/AuthLayout'
 
-import HorasServicioAdminPage from './pages/HorasServicioAdminPage'
+import HorasServicioAdmin from './pages/HorasServicioAdmin'
 import HoraServEstu from './pages/HoraServEstu'
 import ForbiddenPage from "./pages/Forbidden";
 
@@ -19,7 +19,7 @@ export default function App() {
         <Route element={<AuthLayout />}>
           <Route path='/' element={<Profile />} />
           <Route path='/servicio_estudiante' element={<HoraServEstu />} />
-          <Route path='/servicio_admin' element={<HorasServicioAdminPage />} />
+          <Route path='/servicio_admin' element={<HorasServicioAdmin />} />
           <Route path='/lista_estudiantes' element={<h1>Lista de estudiantes para admin</h1>} />
 
 
@@ -29,5 +29,5 @@ export default function App() {
         <Route path="/forbiden" element={<ForbiddenPage />} />
       </Routes>
     </>
-  )
+  );
 }

@@ -8,7 +8,6 @@ export const ProfileContext = createContext()
 export default function AuthLayout() {
 
     const [data, setData] = useState({})
-    console.log(data)
     const [menu, setMenu] = useState(false)
     const rolesOptions = [
         { name: "Perfil", roles: ['Admin', 'Student'], link: "/" },
