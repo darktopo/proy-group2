@@ -7,4 +7,6 @@ export async function update(request, id) {
     } catch (error) {
         throw error
     }
+
 }
+
