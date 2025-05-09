@@ -1,18 +1,27 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { login } from '../axios/auth/auth';
 import { useNavigate } from 'react-router';
 
 export default function Login() {
     const navigate = useNavigate();
+    const [error, setError] = useState (false)
+    
     async function handleLogin(e) {
         e.preventDefault()
+        try{
         const formdata = new FormData(e.target);
         const requestData = Object.fromEntries(formdata.entries())
 
         const data = await login(requestData)
         console.log(data)
-        if (data.status === 'success') {
-            navigate('/');
+        
+            if (data.status === 'success') {
+                navigate('/');
+            }else{
+            setError(true)
+        }}catch(error){
+            console.log(error)
+            setError(true)
         }
     }
 
@@ -33,6 +42,10 @@ export default function Login() {
                     </label>
 
                     <button type="submit" className='w-full h-10 rounded-lg bg-[#053666] text-white font-semibold hover:bg-[#05294e] cursor-pointer'>Acceder</button>
+                    {
+                        error &&
+                        <p className='text-red-600 w-full text-center'>Email o contraseña incorrecta</p>
+                    }
                 </form>
             </div>
 
