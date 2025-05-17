@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { instance } from "../axios/instance";
 import SearchBar from "../components/SearchBar";
+import {
+    getServicios,
+    getEvidence,
+    revisarServicio,
+} from "../axios/services/services";
 
-const HorasServicioAdmin = () => {
+const HorasServicioAdminPage = () => {
     const [originalData, setOriginalData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [nombresEstudiantes, setNombresEstudiantes] = useState([]);
     const [comentarios, setComentarios] = useState({});
+    const [horasAprobadas, setHorasAprobadas] = useState({});
 
     useEffect(() => {
         const fetchServicios = async () => {
             try {
-                const res = await instance.get("/services");
-                const servicios = res.data.filter(
-                    (s) => s.user?.role_id === 4 && s.user?.status === "activo"
-                );
-
+                const servicios = await getServicios();
                 setOriginalData(servicios);
                 setFilteredData(servicios);
 
@@ -52,17 +53,8 @@ const HorasServicioAdmin = () => {
 
     const loadEvidence = async (id) => {
         try {
-            const response = await instance.get(`/evidence/${id}`, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    "Accept": "application/pdf",
-                },
-                responseType: "blob",
-            });
-
-            console.log(response);
-
-            const blob = new Blob([response.data], { type: "application/pdf" });
+            const pdfData = await getEvidence(id);
+            const blob = new Blob([pdfData], { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
             window.open(url, "_blank");
         } catch (error) {
@@ -72,12 +64,15 @@ const HorasServicioAdmin = () => {
     };
 
     const actualizarEstado = async (id, nuevoEstado, comentario) => {
+        const horas = parseFloat(horasAprobadas[id]);
+
+        if (nuevoEstado === "1" && (isNaN(horas) || horas <= 0)) {
+            alert("Debes ingresar una cantidad válida de horas aprobadas.");
+            return;
+        }
+
         try {
-            await instance.patch(`/review/${id}`, {
-                amount_approved: 0,
-                comment: comentario,
-                status: nuevoEstado, // 1 aprobado, 2 rechazado
-            });
+            await revisarServicio(id, nuevoEstado, comentario, horas);
 
             const nuevaData = originalData.map((s) =>
                 s.id === id
@@ -85,6 +80,7 @@ const HorasServicioAdmin = () => {
                         ...s,
                         status: nuevoEstado === "1" ? "approved" : "rejected",
                         comment: comentario,
+                        amount_approved: nuevoEstado === "1" ? horas : 0,
                     }
                     : s
             );
@@ -106,6 +102,10 @@ const HorasServicioAdmin = () => {
         setComentarios((prev) => ({ ...prev, [id]: valor }));
     };
 
+    const handleHorasChange = (id, valor) => {
+        setHorasAprobadas((prev) => ({ ...prev, [id]: valor }));
+    };
+
     return (
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Administrar Horas de Servicio</h1>
@@ -119,25 +119,25 @@ const HorasServicioAdmin = () => {
                 <div className="flex gap-2 mt-2 md:mt-0">
                     <button
                         onClick={resetFiltro}
-                        className="px-3 py-1 bg-gray-200 rounded cursor-pointer hover:bg-gray-300"
+                        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
                     >
                         Todos
                     </button>
                     <button
                         onClick={() => handleFiltrarEstado("approved")}
-                        className="px-3 py-1 bg-green-200 rounded cursor-pointer hover:bg-green-300"
+                        className="px-3 py-1 bg-green-200 rounded hover:bg-green-300"
                     >
                         Aprobados
                     </button>
                     <button
                         onClick={() => handleFiltrarEstado("rejected")}
-                        className="px-3 py-1 bg-red-200 rounded cursor-pointer hover:bg-red-300"
+                        className="px-3 py-1 bg-red-200 rounded hover:bg-red-300"
                     >
                         Rechazados
                     </button>
                     <button
                         onClick={() => handleFiltrarEstado("pending")}
-                        className="px-3 py-1 bg-yellow-200 rounded cursor-pointer hover:bg-yellow-300"
+                        className="px-3 py-1 bg-yellow-200 rounded hover:bg-yellow-300"
                     >
                         Pendientes
                     </button>
@@ -148,8 +148,9 @@ const HorasServicioAdmin = () => {
                 <thead className="bg-[#2c7ee2] text-white">
                     <tr>
                         <th className="border px-2 py-1">Nombre</th>
-                        <th className="border px-2 py-1">Carrera</th>
+                        <th className="border px-2 py-1">Fecha</th>
                         <th className="border px-2 py-1">Horas Reportadas</th>
+                        <th className="border px-2 py-1">Horas Aprobadas</th>
                         <th className="border px-2 py-1">Tipo Servicio</th>
                         <th className="border px-2 py-1">Evidencia</th>
                         <th className="border px-2 py-1">Comentario</th>
@@ -161,9 +162,24 @@ const HorasServicioAdmin = () => {
                         <tr key={s.id}>
                             <td className="border px-2 py-1">{s.user?.full_name || "-"}</td>
                             <td className="border px-2 py-1">
-                                {s.user?.schools?.[0]?.name || "-"}
+                                {new Date(s.created_at).toLocaleDateString()}
                             </td>
                             <td className="border px-2 py-1">{s.amount_reported || 0}</td>
+                            <td className="border px-2 py-1">
+                                {s.status === "Pending" ? (
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.1"
+                                        className="border px-1 py-0.5 w-20 text-xs"
+                                        placeholder="Horas Aprobadas"
+                                        value={horasAprobadas[s.id] || ""}
+                                        onChange={(e) => handleHorasChange(s.id, e.target.value)}
+                                    />
+                                ) : (
+                                    s.amount_approved || "-"
+                                )}
+                            </td>
                             <td className="border px-2 py-1">{s.category?.name || "-"}</td>
                             <td className="border px-2 py-1">
                                 {s.evidence ? (
@@ -177,13 +193,12 @@ const HorasServicioAdmin = () => {
                                     "-"
                                 )}
                             </td>
-
                             <td className="border px-2 py-1">
                                 {s.status === "Pending" ? (
                                     <input
                                         type="text"
                                         className="border px-1 py-0.5 w-full text-xs"
-                                        placeholder="Escribe un comentario"
+                                        placeholder="Comentario"
                                         value={comentarios[s.id] || ""}
                                         onChange={(e) =>
                                             handleComentarioChange(s.id, e.target.value)
@@ -204,7 +219,7 @@ const HorasServicioAdmin = () => {
                                                 actualizarEstado(
                                                     s.id,
                                                     "1",
-                                                    comentarios[s.id] || "Aprobado por el administrador"
+                                                    comentarios[s.id] || "Aprobado"
                                                 )
                                             }
                                         >
@@ -216,7 +231,7 @@ const HorasServicioAdmin = () => {
                                                 actualizarEstado(
                                                     s.id,
                                                     "2",
-                                                    comentarios[s.id] || "Rechazado por el administrador"
+                                                    comentarios[s.id] || "Rechazado"
                                                 )
                                             }
                                         >
@@ -226,12 +241,12 @@ const HorasServicioAdmin = () => {
                                 ) : (
                                     <span
                                         className={
-                                            s.status === "Approved" || s.status === "approved"
+                                            s.status.toLowerCase() === "approved"
                                                 ? "text-green-600 font-semibold"
                                                 : "text-red-600 font-semibold"
                                         }
                                     >
-                                        {s.status === "Approved" || s.status === "approved"
+                                        {s.status.toLowerCase() === "approved"
                                             ? "Aprobado"
                                             : "Rechazado"}
                                     </span>
@@ -245,4 +260,4 @@ const HorasServicioAdmin = () => {
     );
 };
 
-export default HorasServicioAdmin;
+export default HorasServicioAdminPage;
